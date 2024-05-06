@@ -1,0 +1,62 @@
+from gpiozero import Button
+import tkinter as tk
+import vlc
+
+def display_video(video_path, title=" ", width=640, height=480): # width and height are dimensions of the image
+    root = tk.Tk()
+    root.title(title)  # Adds a title
+
+    # Gets screen width and height (needed to center video)
+    screen_width = root.winfo_screenwidth()
+    screen_height = root.winfo_screenheight()
+
+    # Calculates position to center the window
+    x = (screen_width - width) // 2
+    y = (screen_height - height) // 2
+
+    root.geometry(f"{width}x{height}+{x}+{y}")  # Sets window size and position
+
+    # Creates a vlc instance
+    instance = vlc.Instance('--no-xlib')
+
+    # Creates a media player
+    player = instance.media_player_new()
+
+    # Loads the video file
+    media = instance.media_new(video_path)
+    player.set_media(media)
+
+    # Gets the window ID where the video will be rendered
+    win_id = root.winfo_id()
+
+    # Sets the X Window System identifier where the media player should render its video output
+    player.set_xwindow(win_id)
+
+    # Plays the video
+    player.play()
+
+    # Waits for the video to finish playing and closes it when done
+    player_event_manager = player.event_manager()
+    player_event_manager.event_attach(vlc.EventType.MediaPlayerEndReached, lambda event: root.destroy())
+
+    # Main loop
+    root.mainloop()
+
+def main():
+    print("Press a button to display a video.")
+    btn2 = Button(2) 
+    btn3 = Button(3)
+    btn4 = Button(4)
+    btn5 = Button(5)
+    while True:
+        if btn2.is_pressed: 
+            display_video("video.mp4", "TACO TIME", width=1920, height=1200)  # Adjust width and height as needed
+        if btn3.is_pressed:
+            display_video("video.mp4")
+        if btn4.is_pressed:
+            display_video("video.mp4")
+        if btn5.is_pressed:
+            display_video("video.mp4")
+
+if __name__ == "__main__":
+    main()
